@@ -25,6 +25,18 @@ namespace EmployeeAdminPortal.Controllers
             return Ok(allEmployees);
         }
 
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public IActionResult GetEmployeeById(Guid id)
+        {
+            var employee = _context.Employees.FirstOrDefault(e => e.Id == id);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            return Ok(employee);
+        }
+
         [HttpPost]
         public IActionResult AddEmployee(AddEmployeeDto addEmployeeDto)
         {
@@ -40,6 +52,42 @@ namespace EmployeeAdminPortal.Controllers
             _context.SaveChanges();
 
             return Ok(employeeEntity);
+        }
+
+        [HttpPut]
+        public IActionResult UpdateEmployee(Guid id, UpdateEmployeeDto updateEmployeeDto)
+        {
+            var existingEmployee = _context.Employees.FirstOrDefault(e => e.Id == id);
+
+            if (existingEmployee == null)
+            {
+                return NotFound();
+            }
+
+            existingEmployee.Name = updateEmployeeDto.Name;
+            existingEmployee.Email = updateEmployeeDto.Email;
+            existingEmployee.Phone = updateEmployeeDto.Phone;
+            existingEmployee.Salary = updateEmployeeDto.Salary;
+            _context.SaveChanges();
+
+            return Ok(existingEmployee);
+        }
+
+        [HttpDelete]
+        [Route("{id:Guid}")]
+        public IActionResult DeleteEmployee(Guid id)
+        {
+            var existingEmployee = _context.Employees.FirstOrDefault(e => e.Id == id);
+
+            if (existingEmployee == null)
+            {
+                return NotFound();
+            }
+
+            _context.Employees.Remove(existingEmployee);
+            _context.SaveChanges();
+
+            return Ok();
         }
     }
 }
